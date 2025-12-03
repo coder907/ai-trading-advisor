@@ -1,0 +1,38 @@
+trader_task:
+  description: |
+    You are creating a trading setup for {symbol}.
+    
+    Use the analyze_chart tool with {chart_image_path} to visually examine price
+    structure, support/resistance, swing points, and volatility on the chart.
+    
+    Based on the Financial Analyst's directional recommendation from the previous task
+    and your visual chart analysis, create a precise and risk-managed trading setup.
+
+    You may fetch additional information regarding price levels using search_internet
+    and scrape_website tools.
+    
+    If the analyst recommends LONG or SHORT:
+    - Determine optimal entry level
+    - Set stop loss placement
+    - Define take profit target(s)
+    - Analyze price structure, volatility, support/resistance, liquidity zones, 
+      and recent swing points visible in the chart
+    
+    If the analyst issues NO_TRADE, return no trade setup.
+    
+    Take into account the following user prompt as well: {user_prompt}
+  inputs:
+    - symbol: The ticker symbol of the financial instrument to analyze.
+    - chart_image_path: A screenshot image file path of the financial instrument's chart.
+    - user_prompt: Optional custom instructions or context provided by the user.
+  expected_output: |
+    If trade is actionable:
+      - Direction: LONG or SHORT
+      - Entry price level
+      - Stop loss level
+      - One or more (partial) Take Profit levels
+      - Concise justification referencing chart structure such as swings, 
+        support/resistance, trend channels, volume nodes, or volatility.
+    If NO_TRADE:
+      - "NO TRADE — Analyst recommendation indicates no actionable setup."
+  agent: trader_agent

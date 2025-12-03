@@ -1,0 +1,24 @@
+financial_analyst_task:
+  description: |
+    Analyze the chart for {symbol} to determine directional bias.
+    Use the analyze_chart tool with {chart_image_path}.
+    Assess trend strength, momentum, structure, support/resistance, volume, and volatility.
+    Research fundamental and macro context via online research using
+    search_internet and scrape_website tools.
+    Take into account the following user prompt as well: {user_prompt}
+    Produce an explicit directional recommendation: LONG, SHORT, or NO_TRADE.
+  inputs:
+    - symbol: The ticker symbol of the financial instrument to analyze.
+    - chart_image_path: A screenshot image file path of the financial instrument's chart.
+    - user_prompt: Optional custom instructions or context provided by the user.
+  expected_output: |
+    A single directional recommendation:
+      - LONG (bullish trend or bias)
+      - SHORT (bearish trend or bias)
+      - NO_TRADE (unclear or conflicting signals)
+    Followed by a concise justification referencing:
+      - Technical factors: trend, momentum, volume, support/resistance,
+        breakouts/breakdowns, volatility, chart patterns.
+      - Optional fundamental factors: earnings, macro data, notable news,
+        sector conditions.
+  agent: financial_analyst_agent

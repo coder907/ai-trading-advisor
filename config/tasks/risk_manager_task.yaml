@@ -1,0 +1,23 @@
+risk_manager_task:
+  description: |
+    Determine the appropriate dollar risk allocation for the trade based on 
+    total account equity and the conviction level reflected in the Financial 
+    Analyst's recommendation and the Trader's proposed setup.
+    
+    Risk per trade must always fall between 0.5% and 2.0% of account equity.
+    
+    Higher conviction warrants higher risk within the allowed range while
+    lower conviction warrants lower risk.
+    
+    If the Analyst issued NO TRADE, return no risk allocation.
+  inputs:
+    - account_equity: The total account equity available for trading.
+  expected_output: |
+    If trade is actionable:
+      - Recommended risk amount in dollars
+      - The percentage of account equity used
+      - A brief justification referencing trade conviction, setup quality,
+        and adherence to the 0.5% to 2.0% risk range.
+    If NO TRADE:
+      - "NO TRADE — No risk allocated."
+  agent: risk_manager_agent
