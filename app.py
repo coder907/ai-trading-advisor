@@ -58,18 +58,27 @@ class TradingAdvisorApp:
             Formatted trade recommendation text
         """
         try:
-            # Validate inputs
+            # Validate inputs and collect all errors
+            validation_errors = []
+            
             if not symbol:
-                return "❌ Error: Please provide a trading symbol (e.g., ES, AAPL, BTCUSD)"
+                validation_errors.append("Please provide a trading symbol (e.g., ES, AAPL, BTCUSD)")
             
             if chart_image_path is None:
-                return "❌ Error: Please upload a chart screenshot"
-            
-            if not chart_image_path.lower().endswith((".png", ".jpg", ".jpeg")):
-                return "❌ Error: Unsupported image format. Please upload a PNG or JPG image."
+                validation_errors.append("Please upload a chart screenshot")
+            elif not chart_image_path.lower().endswith((".png", ".jpg", ".jpeg")):
+                validation_errors.append("Unsupported image format. Please upload a PNG or JPG image.")
 
-            if account_equity <= 0:
-                return "❌ Error: Account equity must be greater than 0"
+            if account_equity is None or account_equity <= 0:
+                validation_errors.append("Account equity must be provided and greater than 0")
+            
+            # If there are validation errors, return them all
+            if validation_errors:
+                error_output = "❌ VALIDATION ERRORS\n"
+                error_output += "=" * 60 + "\n"
+                for i, error in enumerate(validation_errors, 1):
+                    error_output += f"{i}. {error}\n"
+                return error_output
             
             # Execute the workflow
             output_text = "🔄 Analyzing chart...\n\n"
@@ -280,6 +289,7 @@ class TradingAdvisorApp:
                     
                     equity_input = gr.Number(
                         label="Account Equity ($)",
+                        placeholder="e.g., 100000",
                         value=100000,
                         minimum=1,
                         step=1000
@@ -292,7 +302,7 @@ class TradingAdvisorApp:
                     )
                     
                     analyze_btn = gr.Button(
-                        "🚀 Analyze Trade",
+                        "🚀 Analyze Chart",
                         variant="primary",
                         size="lg"
                     )

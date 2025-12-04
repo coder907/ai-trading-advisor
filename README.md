@@ -69,7 +69,7 @@ SERPER_API_KEY = <YOUR_SERPER_API_KEY>
 - **Serper API Key**: Get from [Serper.dev](https://serper.dev/)
 
 ### 5️⃣ Run the Application
-```bash
+```
 python app.py
 ```
 AI Trading Advisor will be accessible at `http://localhost:7860`.
@@ -85,8 +85,8 @@ AI Trading Advisor will be accessible at `http://localhost:7860`.
    - **Account Equity**: Specify your trading account equity in dollars (e.g. $100000).
    - **User Prompt** (Optional): Add specific analysis requirements, context or other custom instructions.
 
-3. **Analyze Trade**:
-   - Click the **🚀 Analyze Trade** button.
+3. **Analyze Chart**:
+   - Click the **🚀 Analyze Chart** button.
    - Wait for the multi-agent workflow to complete (typically 30 to 90 seconds).
 
 4. **Review Recommendations**:
