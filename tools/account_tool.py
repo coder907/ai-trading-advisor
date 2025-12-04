@@ -1,7 +1,7 @@
 """
 Account Information Tool
 
-This tool retrieves account equity information for risk management calculations.
+This tool retrieves account information for risk management calculations.
 """
 
 from crewai.tools import tool
@@ -17,8 +17,7 @@ def fetch_account_info(account_equity: float) -> str:
     position sizing and risk allocation (0.5% - 2.0% of equity).
     
     Args:
-        account_id: Optional account identifier. If not provided, uses the
-                   default trading account.
+        account_equity: The total account equity value used for risk management calculations.
     
     Returns:
         A string containing account equity information in a structured format.
@@ -26,7 +25,7 @@ def fetch_account_info(account_equity: float) -> str:
     try:
         logging.info("Account Info Tool: Fetching account information")
 
-        # Mocked account info retrieval
+        # Mocked account info retrieval, uses user-provided account equity.
         account_info = {
             "total_equity": account_equity,
             "currency": "USD",
