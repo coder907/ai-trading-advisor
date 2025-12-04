@@ -153,7 +153,8 @@ class TradingAdvisorCrew:
         task_name: str,
         agent: Agent,
         context: Optional[List[Task]] = None,
-        inputs: Optional[Dict[str, Any]] = None
+        inputs: Optional[Dict[str, Any]] = None,
+        output_pydantic: Optional[type] = None
     ) -> Task:
         """
         Create a task from YAML configuration.
@@ -163,6 +164,7 @@ class TradingAdvisorCrew:
             agent: Agent to assign the task to
             context: Optional list of previous tasks for context
             inputs: Optional input variables for the task
+            output_pydantic: Optional Pydantic model for structured output
         
         Returns:
             Configured Task instance
@@ -181,7 +183,8 @@ class TradingAdvisorCrew:
             description=description,
             expected_output=config["expected_output"],
             agent=agent,
-            context=context or []
+            context=context or [],
+            output_pydantic=output_pydantic
         )
         
         return task
@@ -216,7 +219,8 @@ class TradingAdvisorCrew:
             analyst_task = self._create_task(
                 "financial_analyst_task",
                 self.financial_analyst,
-                inputs=inputs
+                inputs=inputs,
+                output_pydantic=AnalystRecommendation
             )
             
             # Task 2: Trader creates trading setup based on analyst recommendation
@@ -224,7 +228,8 @@ class TradingAdvisorCrew:
                 "trader_task",
                 self.trader,
                 context=[analyst_task],
-                inputs=inputs
+                inputs=inputs,
+                output_pydantic=TradingSetup
             )
             
             # Task 3: Risk Manager determines position sizing
@@ -232,7 +237,8 @@ class TradingAdvisorCrew:
                 "risk_manager_task",
                 self.risk_manager,
                 context=[analyst_task, trader_task],
-                inputs=inputs
+                inputs=inputs,
+                output_pydantic=RiskAllocation
             )
             
             # Create and execute the crew
@@ -245,11 +251,9 @@ class TradingAdvisorCrew:
 
             crew.kickoff(inputs=inputs)
             
-            # Parse the results and create structured output
-            # TODO: Have agents return structured JSON/Pydantic models directly
+            # Get structured Pydantic model outputs directly from agents
             complete_plan = self._parse_results_to_plan(
                 symbol=symbol,
-                account_equity=account_equity,
                 analyst_result=analyst_task.output,
                 trader_result=trader_task.output,
                 risk_manager_result=risk_manager_task.output
@@ -283,58 +287,38 @@ class TradingAdvisorCrew:
     def _parse_results_to_plan(
         self,
         symbol: str,
-        account_equity: float,
         analyst_result: Any,
         trader_result: Any,
         risk_manager_result: Any
     ) -> CompleteTradePlan:
         """
-        Parse agent outputs into a structured CompleteTradePlan.
+        Assemble agent outputs into a structured CompleteTradePlan.
         
         Args:
             symbol: Trading symbol
-            analyst_result: Financial analyst task output
-            trader_result: Trader task output
-            risk_manager_result: Risk manager task output
+            analyst_result: Financial analyst task output (AnalystRecommendation)
+            trader_result: Trader task output (TradingSetup)
+            risk_manager_result: Risk manager task output (RiskAllocation)
         
         Returns:
             Structured CompleteTradePlan object
         """
-        # 
-        
         try:
-            # Parse analyst recommendation
-            analyst_text = str(analyst_result.raw if hasattr(analyst_result, 'raw') else analyst_result)
-            direction = self._extract_direction(analyst_text)
-            conviction = self._extract_conviction(analyst_text)
+            # Extract Pydantic models from task outputs
+            analyst_recommendation = analyst_result.pydantic if hasattr(analyst_result, 'pydantic') else analyst_result
+            trading_setup = trader_result.pydantic if hasattr(trader_result, 'pydantic') else trader_result
+            risk_allocation = risk_manager_result.pydantic if hasattr(risk_manager_result, 'pydantic') else risk_manager_result
             
-            analyst_recommendation = AnalystRecommendation(
-                direction=direction,
-                conviction=conviction,
-                symbol=symbol,
-                justification=analyst_text[:500]  # Truncate for summary
-            )
-            
-            # Parse trading setup
-            trader_text = str(trader_result.raw if hasattr(trader_result, 'raw') else trader_result)
-            trading_setup = TradingSetup(
-                direction=direction,
-                symbol=symbol,
-                justification=trader_text[:500],
-                analyst_recommendation=analyst_recommendation
-            )
-            
-            # Parse risk allocation
-            risk_text = str(risk_manager_result.raw if hasattr(risk_manager_result, 'raw') else risk_manager_result)
-            risk_allocation = RiskAllocation(
-                direction=direction,
-                symbol=symbol,
-                account_equity=account_equity,
-                justification=risk_text[:500],
-                trading_setup=trading_setup
-            )
+            # Verify we got valid Pydantic models
+            if not isinstance(analyst_recommendation, AnalystRecommendation):
+                raise ValueError("Analyst task did not return AnalystRecommendation model")
+            if not isinstance(trading_setup, TradingSetup):
+                raise ValueError("Trader task did not return TradingSetup model")
+            if not isinstance(risk_allocation, RiskAllocation):
+                raise ValueError("Risk manager task did not return RiskAllocation model")
             
             # Determine workflow status
+            direction = analyst_recommendation.direction
             if direction == TradeDirection.NO_TRADE:
                 status = "NO_TRADE"
             else:
@@ -349,32 +333,8 @@ class TradingAdvisorCrew:
             )
             
         except Exception as e:
-            raise RuntimeError(f"Error parsing agent results: {str(e)}")
+            raise RuntimeError(f"Error assembling trade plan: {str(e)}")
     
-    def _extract_direction(self, text: str) -> TradeDirection:
-        """Extract trade direction from agent output text."""
-        text_upper = text.upper()
-        if "NO TRADE" in text_upper or "NO_TRADE" in text_upper:
-            return TradeDirection.NO_TRADE
-        elif "LONG" in text_upper:
-            return TradeDirection.LONG
-        elif "SHORT" in text_upper:
-            return TradeDirection.SHORT
-        else:
-            return TradeDirection.NO_TRADE
-    
-    def _extract_conviction(self, text: str) -> ConvictionLevel:
-        """Extract conviction level from agent output text."""
-        text_upper = text.upper()
-        if "HIGH CONVICTION" in text_upper:
-            return ConvictionLevel.HIGH
-        elif "MEDIUM CONVICTION" in text_upper:
-            return ConvictionLevel.MEDIUM
-        elif "LOW CONVICTION" in text_upper:
-            return ConvictionLevel.LOW
-        else:
-            return ConvictionLevel.NONE
-
 
 # Convenience function to create and use the crew
 def create_trading_crew(config_dir: str = "config") -> TradingAdvisorCrew:
