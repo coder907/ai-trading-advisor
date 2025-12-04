@@ -77,9 +77,13 @@ class TradingAdvisorCrew:
         
         return configs
     
-    def _get_llm(self) -> LLM:
+    def _get_llm(self, temperature: float = 0.3, top_p: float = 0.9) -> LLM:
         """
-        Get the LLM.
+        Get the LLM with custom parameters.
+        
+        Args:
+            temperature: Controls randomness (0.0-1.0). Lower = more deterministic
+            top_p: Controls diversity via nucleus sampling (0.0-1.0)
         
         Returns:
             LLM instance configured for the model
@@ -87,8 +91,8 @@ class TradingAdvisorCrew:
 
         return LLM(
             model="gemini/gemini-2.0-flash",
-            temperature=0.3,
-            top_p=0.9,
+            temperature=temperature,
+            top_p=top_p,
             api_key=os.getenv("GOOGLE_API_KEY")
         )
 
@@ -132,7 +136,12 @@ class TradingAdvisorCrew:
             raise ValueError(f"Agent configuration not found: {agent_name}")
         
         config = self.agents_config[agent_name]
-        llm = self._get_llm()
+        
+        llm_config = config.get("llm_config", {})
+        temperature = llm_config.get("temperature", 0.3)
+        top_p = llm_config.get("top_p", 0.9)
+        
+        llm = self._get_llm(temperature=temperature, top_p=top_p)
         tools = self._get_tools_for_agent(config, llm)
         
         agent = Agent(

@@ -24,7 +24,7 @@ def analyze_chart(chart_image_path: str, analysis_prompt: str) -> str:
         chart_image_path: Path to the chart image file (PNG, JPG, etc.)
         analysis_prompt: Specific question or instruction for the chart analysis
                         (e.g., "Identify the trend and key support/resistance levels")
-    
+
     Returns:
         A detailed textual description of the chart analysis including patterns,
         trends, and technical observations.
@@ -39,7 +39,11 @@ def analyze_chart(chart_image_path: str, analysis_prompt: str) -> str:
             contents=[
                 analysis_prompt,
                 Image.open(chart_image_path)
-            ]
+            ],
+            config={
+                'temperature': 0.3,
+                'top_p': 0.9
+            }
         )
 
         analysis_text = response.text

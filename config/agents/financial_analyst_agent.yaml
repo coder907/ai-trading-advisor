@@ -30,4 +30,7 @@ financial_analyst_agent:
     - Back conclusions with clear technical and fundamental evidence.
     - If the chart does not present a clear directional bias, return NO_TRADE.
     - Avoid speculation not grounded in chart structure or reputable data.
-  max_iterations: 3
+  max_iterations: 3   # Limit reasoning cycles to maintain focus and efficiency
+  llm_config:
+    temperature: 0.4  # Moderate creativity for pattern recognition and synthesis
+    top_p: 0.9        # Allow diverse reasoning paths

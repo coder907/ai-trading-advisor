@@ -32,4 +32,7 @@ trader_agent:
         and visible chart targets (e.g., prior highs/lows, imbalance fills).
     - Avoid levels that contradict the trend direction identified by the analyst.
     - Respect liquidity and avoid unrealistic pricing far from current market structure.
-  max_iterations: 3
+  max_iterations: 3   # Limit reasoning cycles to maintain focus and efficiency
+  llm_config:
+    temperature: 0.2  # Low temperature for precise price level calculations
+    top_p: 0.85       # Focused reasoning for technical precision

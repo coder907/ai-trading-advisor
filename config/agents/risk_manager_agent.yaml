@@ -26,4 +26,7 @@ risk_manager_agent:
       - High conviction → ~1.4% to 2.0%
     - Provide clear reasoning for the selected percentage.
     - If Analyst recommendation is NO TRADE, explicitly return: "NO TRADE — No risk allocated."
-  max_iterations: 3  
+  max_iterations: 3   # Limit reasoning cycles to maintain focus and efficiency
+  llm_config:
+    temperature: 0.1  # Very low temperature for deterministic risk calculations
+    top_p: 0.8        # Narrow focus for consistent position sizing  
