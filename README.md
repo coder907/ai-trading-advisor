@@ -48,13 +48,13 @@ graph TD
 ```
 
 **Workflow Process:**
-1. **Input Stage**: User provides chart screenshot, trading symbol, account equity and optional custom prompt.
+1. **Input Stage**: User provides chart screenshot, trading symbol, account equity and optional custom instructions.
 2. **Financial Analyst**: Analyzes chart visually using AI vision, researches market context and determines directional bias (LONG/SHORT/NO_TRADE) with conviction level.
 3. **Trader**: Creates precise trade setup with entry price, stop loss, and take profit targets based on chart structure and analyst recommendation.
 4. **Risk Manager**: Calculates position size and risk allocation (0.5% to 2.0% of equity) based on trade conviction and setup quality.
 5. **Output Stage**: Returns structured `CompleteTradePlan` with all recommendations formatted for user review.
 
-## �💻 System Requirements
+## 💻 System Requirements
 
 The installation process and app usage have been tested on **Windows 11** with **Anaconda3 2024.10 (Python 3.12.7 64-bit)** distribution. Slight modifications may be required to make it run on other systems and/or Python distributions.
 
@@ -103,7 +103,19 @@ AI Trading Advisor will be accessible at `http://localhost:7860`.
 2. **Enter Trading Details**:
    - **Trading Symbol**: Enter the ticker symbol (e.g., ES, AAPL, BTCUSD, EURUSD).
    - **Account Equity**: Specify your trading account equity in dollars (e.g. $100000).
-   - **User Prompt** (Optional): Add specific analysis requirements, context or other custom instructions.
+   - **Custom Instructions (Optional)**: Add any specific instructions, requirements or context for the analysis.
+
+     **💡 Tip**: Providing specific context may significantly improve analysis quality. Include relevant details such as:
+     - Your trading timeframe (scalp, day trade, swing, position).
+     - Specific patterns or setups you're watching for.
+     - Key upcoming events (earnings, Fed announcements, economic data).
+     - Your bias or concerns about the current market structure.
+     - Any specific technical levels or zones you want evaluated.
+     - Whether you want trade recommendation even if there are conflicting signals.
+     
+     **Example 1**: Focus on the 4-hour timeframe. Look for a potential double bottom setup near S1 pivot. Take into account that there's a Fed rate decision tomorrow.
+
+     **Example 2**: Use daily timeframe to determine market trend. Focus on broader macroeconomic picture rather than today's sentiment. Produce a trade recommendation even if there are some conflicting signals.
 
 3. **Analyze Chart**:
    - Click the **🚀 Analyze Chart** button.

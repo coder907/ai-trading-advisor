@@ -297,7 +297,7 @@ class TradingAdvisorApp:
                     
                     user_prompt = gr.Textbox(
                         label="Custom Instructions (Optional)",
-                        placeholder="Add any specific instructions or context for the analysis...",
+                        placeholder="Add any specific instructions, requirements or context for the analysis ...",
                         lines=4
                     )
                     
