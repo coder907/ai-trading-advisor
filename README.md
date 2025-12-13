@@ -25,16 +25,36 @@ AI Trading Advisor is a multi-agent AI system that analyzes trading chart screen
 
 ## How It Works
 
-1. **Upload Chart Screenshot**: User uploads a trading chart image via the Gradio interface.
-2. **Specify Details**: Enter trading symbol and account equity.
-3. **Optional Prompt**: Add custom instructions or context for the analysis.
-4. **Multi-Agent Analysis**:
-   - **Financial Analyst** examines the chart visually, researches market conditions, and determines directional bias.
-   - **Trader** agent studies price structure and creates a detailed trade plan with specific price levels.
-   - **Risk Manager** calculates appropriate position size based on account equity and trade conviction.
-5. **Receive Recommendation**: Get a comprehensive trade plan with analysis, setup and risk allocation in a formatted report.
+```mermaid
+graph TD
+    A[👤 User Input] -->|Chart Image + Symbol + Equity| B[📊 Financial Analyst Agent]
+    B -->|Tools: analyze_chart, search_internet, scrape_website| C{Direction Analysis}
+    C -->|LONG/SHORT/NO_TRADE| D[📋 AnalystRecommendation]
+    D -->|Conviction Level| E[🎯 Trader Agent]
+    E -->|Tools: analyze_chart, search_internet, scrape_website| F{Trade Setup}
+    F -->|Entry/Stop/Targets| G[📋 TradingSetup]
+    G -->|Risk per Share| H[💰 Risk Manager Agent]
+    H -->|Tools: fetch_account_info| I{Position Sizing}
+    I -->|0.5% to 2.0% Equity| J[📋 RiskAllocation]
+    J --> K[📊 CompleteTradePlan]
+    K -->|Formatted Output| L[👤 User Receives Recommendation]
+    
+    style A fill:#e1f5ff
+    style B fill:#fff3cd
+    style E fill:#d4edda
+    style H fill:#f8d7da
+    style K fill:#d1ecf1
+    style L fill:#e1f5ff
+```
 
-## 💻 System Requirements
+**Workflow Process:**
+1. **Input Stage**: User provides chart screenshot, trading symbol, account equity and optional custom prompt.
+2. **Financial Analyst**: Analyzes chart visually using AI vision, researches market context and determines directional bias (LONG/SHORT/NO_TRADE) with conviction level.
+3. **Trader**: Creates precise trade setup with entry price, stop loss, and take profit targets based on chart structure and analyst recommendation.
+4. **Risk Manager**: Calculates position size and risk allocation (0.5% to 2.0% of equity) based on trade conviction and setup quality.
+5. **Output Stage**: Returns structured `CompleteTradePlan` with all recommendations formatted for user review.
+
+## �💻 System Requirements
 
 The installation process and app usage have been tested on **Windows 11** with **Anaconda3 2024.10 (Python 3.12.7 64-bit)** distribution. Slight modifications may be required to make it run on other systems and/or Python distributions.
 
@@ -64,7 +84,7 @@ GOOGLE_API_KEY = <YOUR_GOOGLE_API_KEY>
 SERPER_API_KEY = <YOUR_SERPER_API_KEY>
 ```
 
-**Where to get API keys:**
+Where to get API keys:
 - **Google API Key**: Get from [Google AI Studio](https://makersuite.google.com/app/apikey)
 - **Serper API Key**: Get from [Serper.dev](https://serper.dev/)
 
